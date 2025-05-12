@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘, 3가지는 반드시 해내고 만다. 1. 2. 3</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #FFA500, #FF8C00);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .todo-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #FFA500;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #FF8C00;
+            box-shadow: 0 0 10px rgba(255,165,0,0.3);
+        }
+
+        button {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #FFA500, #FF8C00);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,165,0,0.4);
+        }
+
+        .todo-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background-color: #fff;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .todo-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .todo-item i {
+            margin-right: 15px;
+            color: #FFA500;
+            font-size: 1.2rem;
+        }
+
+        .todo-item.completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+            background-color: #f8f9fa;
+        }
+
+        .quote-container {
+            margin-top: 40px;
+            padding: 25px;
+            background: linear-gradient(135deg, #fff, #f8f9fa);
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .quote {
+            font-style: italic;
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            padding: 8px 15px;
+            font-size: 14px;
+        }
+
+        .delete-btn:hover {
+            background: linear-gradient(135deg, #cc0000, #ff4444);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-clock"></i> 오늘의 할 일 3가지는 반드시 해낸다. 1.2.3.</h1>
+        
+        <div class="todo-input">
+            <input type="text" id="todoInput" placeholder="할일을 입력하세요" class="form-control">
+            <button onclick="addTodo()" class="btn btn-warning">추가</button>
+        </div>
+
+        <ul class="todo-list" id="todoList">
+        </ul>
+
+        <div class="quote-container">
+            <p class="quote" id="quote"></p>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.32/dist/sweetalert2.all.min.js"></script>
+
+    <script>
+        const quotes = [
+            "시간은 금이다.",
+            "시간은 가장 소중한 자산이다.",
+            "시간을 낭비하는 것은 인생을 낭비하는 것이다.",
+            "시간은 모든 것을 치유한다.",
+            "시간은 가장 좋은 선생님이다.",
+            "시간은 모든 것을 변화시킨다.",
+            "시간은 가장 공정한 것이다.",
+            "시간은 기다리지 않는다.",
+            "시간은 가장 값진 선물이다.",
+            "시간은 모든 것을 가능하게 한다."
+        ];
+
+        function getRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            return quotes[randomIndex];
+        }
+
+        function updateQuote() {
+            const quoteElement = document.getElementById('quote');
+            quoteElement.style.opacity = '0';
+            setTimeout(() => {
+                quoteElement.textContent = getRandomQuote();
+                quoteElement.style.opacity = '1';
+            }, 500);
+        }
+
+        // 페이지 로드시 명언 표시
+        updateQuote();
+        // 10초마다 명언 변경
+        setInterval(updateQuote, 10000);
+
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const todoList = document.getElementById('todoList');
+            
+            if (input.value.trim() === '') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '알림',
+                    text: '할일을 입력해주세요!',
+                    confirmButtonColor: '#FFA500'
+                });
+                return;
+            }
+
+            const li = document.createElement('li');
+            li.className = 'todo-item';
+            li.innerHTML = `
+                <i class="fas fa-clock"></i>
+                <span>${input.value}</span>
+                <button onclick="deleteTodo(this)" class="delete-btn" style="margin-left: auto;">
+                    <i class="fas fa-trash"></i>
+                </button>
+            `;
+
+            li.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'BUTTON' && !e.target.closest('button')) {
+                    this.classList.toggle('completed');
+                    const status = this.classList.contains('completed') ? '완료' : '미완료';
+                    Swal.fire({
+                        icon: 'success',
+                        title: '상태 변경',
+                        text: `할일이 ${status} 상태로 변경되었습니다.`,
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+
+            todoList.appendChild(li);
+            input.value = '';
+
+            Swal.fire({
+                icon: 'success',
+                title: '추가 완료',
+                text: '할일이 추가되었습니다!',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+
+        function deleteTodo(button) {
+            Swal.fire({
+                title: '삭제 확인',
+                text: '이 할일을 삭제하시겠습니까?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#FFA500',
+                cancelButtonColor: '#d33',
+                confirmButtonText: '삭제',
+                cancelButtonText: '취소'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    button.parentElement.remove();
+                    Swal.fire({
+                        icon: 'success',
+                        title: '삭제 완료',
+                        text: '할일이 삭제되었습니다.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+
+        // Enter 키로 할일 추가
+        document.getElementById('todoInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addTodo();
+            }
+        });
+    </script>
+</body>
+</html>
